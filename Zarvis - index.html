@@ -1,0 +1,2432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zarvis — Professional Documents, Instantly</title>
+  
+  <!-- ===== GOOGLE FONTS ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== ROOT VARIABLES ===== */
+    :root {
+      --bg-primary: #0A0F1E;
+      --bg-surface: #111827;
+      --border-color: #1F2937;
+      --gold: #C9A84C;
+      --gold-soft: rgba(201, 168, 76, 0.12);
+      --blue: #3B82F6;
+      --text-primary: #F9FAFB;
+      --text-secondary: #9CA3AF;
+      --success: #10B981;
+      --font-heading: 'Cormorant Garamond', serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    /* ===== BASIC RESET ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== APP WRAPPER ===== */
+    .app-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== TOP HEADER BAR ===== */
+    .top-bar {
+      height: 64px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      animation: fadeInDown 0.6s ease;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: var(--font-body);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      white-space: nowrap;
+    }
+
+    .logo span {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .tagline {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .region-select {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      color: var(--gold);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .region-select:hover,
+    .region-select:focus {
+      border-color: var(--gold);
+    }
+
+    /* ===== MAIN CONTAINER ===== */
+    .main-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      animation: fadeInLeft 0.5s ease 0.1s both;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem 1.25rem 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-secondary);
+    }
+
+    .doc-list {
+      list-style: none;
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      overflow-y: auto;
+    }
+
+    .doc-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.25s ease;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .doc-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-primary);
+    }
+
+    .doc-item.active {
+      background: var(--gold-soft);
+      color: var(--gold);
+      border-left-color: var(--gold);
+      font-weight: 600;
+    }
+
+    .doc-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    /* ===== MOBILE DOCUMENT SELECTOR ===== */
+    .mobile-doc-select {
+      display: none;
+      padding: 1rem;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .mobile-doc-select select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    /* ===== CONTENT AREA ===== */
+    .content-area {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      animation: fadeInUp 0.5s ease 0.2s both;
+    }
+
+    /* ===== FORM PANEL ===== */
+    .form-panel {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-color);
+      min-width: 0;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      max-width: 320px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .form-content {
+      max-width: 720px;
+    }
+
+    .doc-title {
+      font-family: var(--font-heading);
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* ===== FORM GRID ===== */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .form-field.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      padding: 0.75rem 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .field-hint {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      opacity: 0.8;
+    }
+
+    .char-count {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-align: right;
+      margin-top: 0.25rem;
+    }
+
+    /* ===== GENERATE BUTTON ===== */
+    .generate-btn {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: var(--gold);
+      color: #0A0F1E;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(201, 168, 76, 0.25);
+    }
+
+    .generate-btn:active {
+      transform: translateY(0);
+    }
+
+    .generate-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .generate-btn:hover::after {
+      left: 100%;
+    }
+
+    /* ===== PREVIEW PANEL ===== */
+    .preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+      min-width: 0;
+    }
+
+    .preview-header {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-soft);
+    }
+
+    .preview-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .document-paper {
+      background: #fff;
+      color: #111;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 2.5rem;
+      min-height: 297mm;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      border-radius: 2px;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 11.5pt;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .placeholder-hint {
+      color: #B45309;
+      background: rgba(196, 181, 146, 0.15);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== RESPONSIVE BREAKPOINTS ===== */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      .doc-list {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 0.75rem;
+        gap: 0.5rem;
+      }
+      
+      .doc-item {
+        white-space: nowrap;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+      }
+      
+      .doc-item.active {
+        border-left-color: transparent;
+        border-bottom-color: var(--gold);
+      }
+      
+      .main-container {
+        flex-direction: column;
+      }
+      
+      .content-area {
+        flex-direction: column;
+      }
+      
+      .form-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        max-height: 50vh;
+      }
+      
+      .tagline {
+        display: none;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .top-bar {
+        padding: 0 1rem;
+        height: 56px;
+      }
+      
+      .header-controls {
+        gap: 0.75rem;
+      }
+      
+      .region-select {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.5rem;
+      }
+      
+      .sidebar {
+        display: none;
+      }
+      
+      .mobile-doc-select {
+        display: block;
+      }
+      
+      .main-container {
+        flex-direction: column;
+      }
+      
+      .content-area {
+        flex-direction: column;
+      }
+      
+      .form-panel {
+        padding: 1.25rem;
+        border: none;
+        max-height: none;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .preview-panel {
+        min-height: 50vh;
+      }
+      
+      .document-paper {
+        padding: 1.5rem;
+        font-size: 10.5pt;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #374151;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-wrapper">
+    
+    <header class="top-bar">
+      <div class="logo">Zar<span>vis</span></div>
+      <div class="header-controls">
+        <div class="tagline">Professional Documents, Instantly</div>
+        <select class="region-select" id="regionSelect" onchange="changeRegion(this.value)">
+          <option value="india">India 🇮🇳</option>
+          <option value="usa">United States 🇺🇸</option>
+          <option value="canada">Canada 🇨🇦</option>
+          <option value="uk">United Kingdom 🇬🇧</option>
+          <option value="eu">European Union 🇪🇺</option>
+          <option value="international">International 🌍</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="main-container">
+      
+      <aside class="sidebar">
+        <div class="sidebar-header">Document Type</div>
+        <ul class="doc-list" id="docList"></ul>
+      </aside>
+
+      <main class="content-area">
+        
+        <div class="mobile-doc-select" id="mobileDocSelect">
+          <select id="mobileSelect">
+            <option value="">Select Document Type...</option>
+          </select>
+        </div>
+
+        <div class="form-panel" id="formPanel">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📄</div>
+            <h3>Select a document type to begin</h3>
+            <p>Choose from the sidebar to generate professional business documents instantly.</p>
+          </div>
+
+          <div class="form-content" id="formContent" style="display: none;">
+            <h2 class="doc-title" id="docTitle"></h2>
+            <div class="form-grid" id="formGrid"></div>
+            <button class="generate-btn" onclick="printDocument()">
+              Download / Print Document
+            </button>
+          </div>
+        </div>
+
+        <div class="preview-panel">
+          <div class="preview-header">
+            <span>Live Preview</span>
+            <button class="copy-btn" onclick="copyToClipboard()" title="Copy to clipboard">📋</button>
+          </div>
+          <div class="preview-content" id="previewContent"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ===== REGION CONFIGURATION =====
+    // Each region defines currency, date style, address hints, and legal terminology.
+    const REGION_CONFIG = {
+      india: {
+        name: 'India',
+        currency: '₹',
+        dateFormat: 'DD Month YYYY',
+        dateHint: 'DD/MM/YYYY',
+        addrHint: 'Full address with PIN code',
+        stateLabel: 'State',
+        pinLabel: 'PIN Code',
+        employmentType: 'permanent with probation',
+        noticePeriod: 'one month',
+        rentalDepositMonths: 2,
+        rentalNotice: 'one month'
+      },
+      usa: {
+        name: 'United States',
+        currency: '$',
+        dateFormat: 'Month DD, YYYY',
+        dateHint: 'MM/DD/YYYY',
+        addrHint: 'Street, City, State ZIP',
+        stateLabel: 'State',
+        pinLabel: 'ZIP Code',
+        employmentType: 'at-will employment',
+        noticePeriod: 'at-will (no fixed notice)',
+        rentalDepositMonths: 1,
+        rentalNotice: '30 days'
+      },
+      canada: {
+        name: 'Canada',
+        currency: 'C$',
+        dateFormat: 'Month DD, YYYY',
+        dateHint: 'MM/DD/YYYY',
+        addrHint: 'Street, City, Province Postal Code',
+        stateLabel: 'Province',
+        pinLabel: 'Postal Code',
+        employmentType: 'permanent with probation per provincial standards',
+        noticePeriod: 'per provincial Employment Standards Code',
+        rentalDepositMonths: 'half month (varies by province)',
+        rentalNotice: 'per provincial tenancy act'
+      },
+      uk: {
+        name: 'United Kingdom',
+        currency: '£',
+        dateFormat: 'DD Month YYYY',
+        dateHint: 'DD/MM/YYYY',
+        addrHint: 'Street, City, Postcode',
+        stateLabel: 'County',
+        pinLabel: 'Postcode',
+        employmentType: 'permanent with statutory rights',
+        noticePeriod: 'statutory minimum (one week per year)',
+        rentalDepositMonths: '5 weeks (Deposit Protection Scheme)',
+        rentalNotice: 'two months (AST standard)'
+      },
+      eu: {
+        name: 'European Union',
+        currency: '€',
+        dateFormat: 'DD Month YYYY',
+        dateHint: 'DD/MM/YYYY',
+        addrHint: 'Street, City, Postal Code, Country',
+        stateLabel: 'Region',
+        pinLabel: 'Postal Code',
+        employmentType: 'permanent under EU Directive 2019/1152',
+        noticePeriod: 'per Member State law (typically 1–3 months)',
+        rentalDepositMonths: 'max 3 months (varies by Member State)',
+        rentalNotice: 'per local tenancy law (typically 3 months)'
+      },
+      international: {
+        name: 'International',
+        currency: '$',
+        dateFormat: 'DD Month YYYY',
+        dateHint: 'DD/MM/YYYY',
+        addrHint: 'Full address including country',
+        stateLabel: 'State / Province',
+        pinLabel: 'Postal Code',
+        employmentType: 'standard employment',
+        noticePeriod: 'one month',
+        rentalDepositMonths: 1,
+        rentalNotice: '30 days'
+      }
+    };
+
+    // ===== CURRENT STATE =====
+    let currentRegion = 'india';
+    let currentDoc = null;
+
+    // ===== DOCUMENT DEFINITIONS =====
+    // Each document provides fields and a template generator function that accepts region.
+    const DOCUMENT_TYPES = [
+      {
+        id: 'rental',
+        name: 'Rental Agreement',
+        icon: '🏠',
+        getFields: (r) => {
+          const cfg = REGION_CONFIG[r];
+          return [
+            { key: 'landlordName', label: 'Landlord Full Name', type: 'text', placeholder: 'e.g. Rajesh Kumar Sharma', hint: 'As per government ID' },
+            { key: 'landlordAddress', label: 'Landlord Address', type: 'textarea', placeholder: 'Full address', hint: cfg.addrHint },
+            { key: 'tenantName', label: 'Tenant Full Name', type: 'text', placeholder: 'e.g. Priya Singh', hint: 'As per government ID' },
+            { key: 'tenantPhone', label: 'Tenant Phone Number', type: 'text', placeholder: 'e.g. +1 987-654-3210', hint: 'Active contact number' },
+            { key: 'propertyAddress', label: 'Property Full Address', type: 'textarea', placeholder: 'Complete property address', hint: 'Address as per property records' },
+            { key: 'rentAmount', label: `Monthly Rent (${cfg.currency})`, type: 'text', placeholder: 'e.g. 1500', hint: `In ${cfg.currency}` },
+            { key: 'securityDeposit', label: `Security Deposit (${cfg.currency})`, type: 'text', placeholder: 'e.g. 3000', hint: `Usually ${cfg.rentalDepositMonths} month(s)` },
+            { key: 'startDate', label: 'Agreement Start Date', type: 'date', hint: cfg.dateHint },
+            { key: 'duration', label: 'Duration (Months)', type: 'select', options: ['6', '11', '12', '24'], hint: 'Standard lease duration' },
+            { key: 'city', label: 'City', type: 'text', placeholder: 'e.g. New York', hint: 'City where property is located' }
+          ];
+        },
+        getTemplate: (r) => {
+          const cfg = REGION_CONFIG[r];
+          if (r === 'india') {
+            return `RENTAL AGREEMENT
+
+This Rental Agreement is entered into on {{START_DATE}}, between:
+
+LANDLORD: {{LANDLORD_NAME}}, residing at {{LANDLORD_ADDRESS}} (hereinafter referred to as the "Landlord")
+
+AND
+
+TENANT: {{TENANT_NAME}}, Contact: {{TENANT_PHONE}} (hereinafter referred to as the "Tenant")
+
+PROPERTY: The Landlord agrees to let out the property situated at {{PROPERTY_ADDRESS}} to the Tenant for residential purposes.
+
+TERMS AND CONDITIONS:
+
+1. DURATION: This agreement shall be valid for a period of {{DURATION}} months commencing from {{START_DATE}}.
+
+2. RENT: The monthly rent shall be ${cfg.currency}{{RENT_AMOUNT}}/-, payable on or before the 5th of every month.
+
+3. SECURITY DEPOSIT: The Tenant has paid a security deposit of ${cfg.currency}{{SECURITY_DEPOSIT}}/- which shall be refunded at the time of vacating the premises, subject to deductions for damages, if any.
+
+4. UTILITIES: The Tenant shall bear all charges for electricity, water, and other utilities consumed during the tenancy period.
+
+5. MAINTENANCE: The Tenant shall maintain the property in good condition and shall not make any structural changes without prior written consent of the Landlord.
+
+6. TERMINATION: Either party may terminate this agreement by giving ${cfg.rentalNotice}' prior written notice.
+
+7. SUBLETTING: The Tenant shall not sublet the premises or any part thereof without the written consent of the Landlord.
+
+IN WITNESS WHEREOF, the parties hereto have set their hands on the day and year first above written at {{CITY}}.
+
+
+LANDLORD                                    TENANT
+{{LANDLORD_NAME}}                           {{TENANT_NAME}}
+Signature: _______________                  Signature: _______________
+
+
+WITNESS 1: _______________                  WITNESS 2: _______________`;
+          } else if (r === 'usa') {
+            return `RESIDENTIAL LEASE AGREEMENT
+
+This Lease Agreement is made on {{START_DATE}}, by and between:
+
+LANDLORD: {{LANDLORD_NAME}}, of {{LANDLORD_ADDRESS}} ("Landlord")
+
+AND
+
+TENANT: {{TENANT_NAME}}, Phone: {{TENANT_PHONE}} ("Tenant")
+
+PREMISES: The Landlord hereby leases to the Tenant the residential property located at {{PROPERTY_ADDRESS}}.
+
+1. TERM: The lease term shall be for {{DURATION}} months, beginning on {{START_DATE}}.
+
+2. RENT: Tenant agrees to pay monthly rent of ${cfg.currency}{{RENT_AMOUNT}}, due on the 1st of each month. Late payments shall incur a late fee as permitted by state law.
+
+3. SECURITY DEPOSIT: A security deposit of ${cfg.currency}{{SECURITY_DEPOSIT}} is held by the Landlord in accordance with state security deposit laws and shall be returned within the timeframe required by law, less lawful deductions.
+
+4. UTILITIES: Tenant is responsible for all utilities including electricity, gas, water, sewer, trash, and internet unless otherwise agreed in writing.
+
+5. USE: The premises shall be used strictly as a private residence. Tenant shall not conduct business or illegal activity on the premises.
+
+6. MAINTENANCE: Tenant shall keep the premises clean and sanitary. No alterations or redecorating shall be made without Landlord's prior written consent.
+
+7. TERMINATION: Either party may terminate this lease by giving ${cfg.rentalNotice}' written notice, or as otherwise required by state law.
+
+8. SUBLETTING: Tenant shall not sublet, assign, or transfer this lease without prior written consent of the Landlord.
+
+9. LEAD PAINT DISCLOSURE: If the premises were built before 1978, Tenant acknowledges receipt of the Lead-Based Paint Disclosure required by federal law.
+
+IN WITNESS WHEREOF, the parties have executed this agreement at {{CITY}}.
+
+
+___________________________                ___________________________
+Landlord: {{LANDLORD_NAME}}                Tenant: {{TENANT_NAME}}
+Date: _______________                      Date: _______________`;
+          } else if (r === 'canada') {
+            return `RESIDENTIAL TENANCY AGREEMENT
+
+This Residential Tenancy Agreement is entered into on {{START_DATE}} between:
+
+LANDLORD: {{LANDLORD_NAME}}, of {{LANDLORD_ADDRESS}} ("Landlord")
+
+AND
+
+TENANT: {{TENANT_NAME}}, Phone: {{TENANT_PHONE}} ("Tenant")
+
+RENTAL UNIT: The Landlord agrees to rent to the Tenant the residential premises at {{PROPERTY_ADDRESS}}.
+
+1. TERM: This tenancy shall be for a fixed term of {{DURATION}} months commencing {{START_DATE}}.
+
+2. RENT: The monthly rent is ${cfg.currency}{{RENT_AMOUNT}}, payable on or before the first day of each month.
+
+3. SECURITY DEPOSIT / LAST MONTH'S RENT: The Tenant has paid ${cfg.currency}{{SECURITY_DEPOSIT}} as a security deposit and/or last month's rent, held in compliance with the applicable provincial tenancy laws.
+
+4. UTILITIES: The Tenant is responsible for the following utilities: electricity, water, gas, and internet, unless stated otherwise.
+
+5. USE OF PREMISES: The premises shall be used as a private residential dwelling only.
+
+6. REPAIR AND MAINTENANCE: The Tenant shall maintain the rental unit in a reasonable state of cleanliness and repair damage caused by the Tenant's conduct.
+
+7. TERMINATION: This agreement shall terminate in accordance with the applicable provincial Residential Tenancies Act. Either party must provide notice as required by provincial law.
+
+8. SUBLETTING: The Tenant shall not sublet or assign the tenancy without the Landlord's written consent, as per provincial law.
+
+9. RENT INCREASE: Any rent increase shall comply with the provincial rent increase guidelines and required notice periods.
+
+IN WITNESS WHEREOF, the parties have signed at {{CITY}}.
+
+
+___________________________                ___________________________
+Landlord: {{LANDLORD_NAME}}                Tenant: {{TENANT_NAME}}
+Date: _______________                      Date: _______________`;
+          } else if (r === 'uk') {
+            return `ASSURED SHORTHOLD TENANCY AGREEMENT
+
+This agreement is made on {{START_DATE}} between:
+
+LANDLORD: {{LANDLORD_NAME}}, of {{LANDLORD_ADDRESS}} ("the Landlord")
+
+AND
+
+TENANT: {{TENANT_NAME}}, Tel: {{TENANT_PHONE}} ("the Tenant")
+
+PROPERTY: The Landlord lets the dwelling at {{PROPERTY_ADDRESS}} to the Tenant.
+
+1. TERM: A fixed term of {{DURATION}} months commencing on {{START_DATE}}.
+
+2. RENT: ${cfg.currency}{{RENT_AMOUNT}} per month, payable in advance by standing order on the 1st of each month.
+
+3. DEPOSIT: A deposit of ${cfg.currency}{{SECURITY_DEPOSIT}} is held under a government-authorised Tenancy Deposit Protection scheme. The deposit will be returned within 10 days of agreement end, less lawful deductions.
+
+4. UTILITIES AND COUNCIL TAX: The Tenant is responsible for all utility bills and Council Tax unless otherwise agreed.
+
+5. REPAIR AND USE: The Tenant agrees to use the property as a private residence only, to keep it clean, and not to make alterations without consent. The Landlord is responsible for structural repairs.
+
+6. TERMINATION: The Landlord must give at least two months' notice under Section 21 (where applicable). The Tenant must give at least one month's notice.
+
+7. SUBLETTING: The Tenant may not sublet or part with possession of the whole or any part of the property without written consent.
+
+8. RIGHT TO RENT: The Tenant confirms they have the right to rent in England / Wales / Scotland under the Immigration Act 2014.
+
+SIGNED at {{CITY}} on the date first written above.
+
+
+___________________________                ___________________________
+Landlord: {{LANDLORD_NAME}}                Tenant: {{TENANT_NAME}}
+Date: _______________                      Date: _______________`;
+          } else if (r === 'eu') {
+            return `RESIDENTIAL RENTAL AGREEMENT
+
+This Rental Agreement is concluded on {{START_DATE}} between:
+
+LESSOR: {{LANDLORD_NAME}}, residing at {{LANDLORD_ADDRESS}} ("the Lessor")
+
+AND
+
+LESSEE: {{TENANT_NAME}}, Contact: {{TENANT_PHONE}} ("the Lessee")
+
+PREMISES: The Lessor lets the property situated at {{PROPERTY_ADDRESS}} to the Lessee for residential use.
+
+1. DURATION: This agreement is concluded for a fixed term of {{DURATION}} months, commencing on {{START_DATE}}.
+
+2. RENT: The monthly rent is set at ${cfg.currency}{{RENT_AMOUNT}}, payable in advance by the 5th of each month.
+
+3. DEPOSIT: A guarantee deposit of ${cfg.currency}{{SECURITY_DEPOSIT}} is paid by the Lessee, held in accordance with the applicable Member State tenancy law (capped where applicable). It shall be returned within the statutory period after the lease ends, less justified deductions.
+
+4. CHARGES: The Lessee shall bear consumption-related charges (electricity, water, heating, etc.) and any communal charges not included in the rent, as per local custom.
+
+5. USE AND MAINTENANCE: The premises shall be used exclusively as a private residence. The Lessee shall maintain the property in good condition and may not make structural alterations without the Lessor's prior written consent.
+
+6. TERMINATION: Either party may terminate this agreement by giving notice as required by the applicable local tenancy law (typically three months). Early termination clauses, if any, must comply with national consumer protection rules.
+
+7. SUBLETTING: Subletting or assignment is prohibited without the Lessor's prior written consent.
+
+8. INVENTORY: An inventory and condition report shall be prepared at entry and exit, signed by both parties.
+
+Executed at {{CITY}}.
+
+
+___________________________                ___________________________
+Lessor: {{LANDLORD_NAME}}                  Lessee: {{TENANT_NAME}}
+Date: _______________                      Date: _______________`;
+          } else {
+            return `RESIDENTIAL LEASE AGREEMENT
+
+This Lease Agreement is made on {{START_DATE}} between:
+
+LANDLORD: {{LANDLORD_NAME}}, of {{LANDLORD_ADDRESS}} ("Landlord")
+
+AND
+
+TENANT: {{TENANT_NAME}}, Phone: {{TENANT_PHONE}} ("Tenant")
+
+PROPERTY: The Landlord agrees to lease the property at {{PROPERTY_ADDRESS}} to the Tenant.
+
+1. TERM: {{DURATION}} months, commencing {{START_DATE}}.
+
+2. RENT: ${cfg.currency}{{RENT_AMOUNT}} per month, payable in advance on the 1st of each month.
+
+3. SECURITY DEPOSIT: ${cfg.currency}{{SECURITY_DEPOSIT}}, refundable within 30 days of lease end, less lawful deductions for damages or unpaid rent.
+
+4. UTILITIES: Tenant pays all utility charges unless otherwise stated.
+
+5. USE: The property shall be used as a private residence only. No business use or illegal activity permitted.
+
+6. MAINTENANCE: Tenant shall keep the premises clean and report defects promptly. No alterations without Landlord consent.
+
+7. TERMINATION: Either party may terminate by giving ${cfg.rentalNotice}' written notice, or as required by local law.
+
+8. SUBLETTING: Not permitted without prior written consent.
+
+Executed at {{CITY}}.
+
+
+___________________________                ___________________________
+Landlord: {{LANDLORD_NAME}}                Tenant: {{TENANT_NAME}}
+Date: _______________                      Date: _______________`;
+          }
+        }
+      },
+
+      {
+        id: 'appointment',
+        name: 'Appointment Letter',
+        icon: '📋',
+        getFields: (r) => {
+          const cfg = REGION_CONFIG[r];
+          const isUS = r === 'usa';
+          const isIndia = r === 'india';
+          const fields = [
+            { key: 'companyName', label: 'Company Name', type: 'text', placeholder: 'e.g. Acme Corporation', hint: 'Registered legal entity name' },
+            { key: 'companyAddress', label: 'Company Address', type: 'textarea', placeholder: 'Registered office address', hint: cfg.addrHint },
+            { key: 'employeeName', label: 'Employee Full Name', type: 'text', placeholder: 'e.g. John Smith', hint: 'As per government ID' },
+            { key: 'designation', label: 'Designation / Position', type: 'text', placeholder: 'e.g. Senior Software Engineer', hint: 'Official job title' },
+            { key: 'department', label: 'Department', type: 'text', placeholder: 'e.g. Engineering', hint: 'Department name' },
+            { key: 'salary', label: isIndia ? `Monthly CTC (${cfg.currency})` : `Annual Base Salary (${cfg.currency})`, type: 'text', placeholder: isIndia ? 'e.g. 75000' : 'e.g. 95000', hint: isIndia ? 'Per month cost to company' : 'Per annum base compensation' },
+            { key: 'joiningDate', label: 'Joining Date', type: 'date', hint: cfg.dateHint },
+            { key: 'reportingManager', label: 'Reporting Manager Name', type: 'text', placeholder: 'e.g. Sarah Johnson', hint: 'Immediate supervisor' },
+            { key: 'city', label: 'Work Location City', type: 'text', placeholder: 'e.g. San Francisco', hint: 'Primary office / work location' },
+            { key: 'issueDate', label: 'Letter Issue Date', type: 'date', hint: cfg.dateHint }
+          ];
+          if (!isUS) {
+            fields.splice(8, 0, { key: 'probationPeriod', label: 'Probation / Orientation Period', type: 'select', options: isIndia ? ['3 months', '6 months', 'No probation'] : ['3 months', '6 months', 'Not applicable'], hint: 'Select applicable period' });
+          }
+          return fields;
+        },
+        getTemplate: (r) => {
+          const cfg = REGION_CONFIG[r];
+          if (r === 'india') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{EMPLOYEE_NAME}}
+
+Subject: Appointment Letter — {{DESIGNATION}}
+
+Dear {{EMPLOYEE_NAME}},
+
+We are pleased to appoint you as {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{CITY}}, with effect from {{JOINING_DATE}}.
+
+Your employment is subject to the following terms and conditions:
+
+1. DESIGNATION: You will be designated as {{DESIGNATION}} in the {{DEPARTMENT}} Department.
+
+2. REMUNERATION: You will be entitled to a monthly Cost to Company (CTC) of ${cfg.currency}{{SALARY}}.
+
+3. REPORTING: You will report to {{REPORTING_MANAGER}}.
+
+4. PROBATION: You will be on probation for a period of {{PROBATION_PERIOD}} from the date of joining. The Company reserves the right to extend or waive the probation period based on performance.
+
+5. WORKING HOURS: Your working hours will be as per the Company's norms, which may be revised from time to time.
+
+6. CONFIDENTIALITY: You are required to maintain strict confidentiality about the Company's business, processes, and client information.
+
+7. TERMINATION: During probation, either party may terminate the employment by giving 7 days' notice. Post confirmation, one month's notice from either side will be required.
+
+We welcome you to our team and look forward to a mutually beneficial association.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+
+I accept the above terms and conditions.
+
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'usa') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+{{EMPLOYEE_NAME}}
+{{EMPLOYEE_ADDRESS}}
+
+Subject: Appointment Letter — {{DESIGNATION}}
+
+Dear {{EMPLOYEE_NAME}},
+
+We are delighted to offer you employment as {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, located in {{CITY}}, effective {{JOINING_DATE}}.
+
+1. POSITION: You will serve as {{DESIGNATION}}, reporting to {{REPORTING_MANAGER}}.
+
+2. COMPENSATION: You will receive an annual base salary of ${cfg.currency}{{SALARY}}, payable in accordance with the Company's standard payroll schedule, less applicable withholdings.
+
+3. EMPLOYMENT AT-WILL: Your employment with the Company is at-will. This means that either you or the Company may terminate the employment relationship at any time, with or without cause, and with or without advance notice.
+
+4. BENEFITS: You will be eligible to participate in Company benefit plans (health, dental, vision, 401(k)) subject to the terms and conditions of each plan.
+
+5. BACKGROUND CHECK: This appointment is contingent upon the successful completion of background and reference checks, including verification of your right to work in the United States (I-9 and E-Verify where applicable).
+
+6. CONFIDENTIALITY AND IP: You will be required to sign the Company's Confidentiality and Intellectual Property Assignment Agreement.
+
+7. WORKING HOURS: This position is [exempt / non-exempt] under the Fair Labor Standards Act. Working hours are as determined by the Company.
+
+8. ENTIRE AGREEMENT: This letter constitutes the entire agreement between you and the Company and supersedes all prior negotiations and understandings. No oral or implied promises are binding.
+
+Please confirm your acceptance by signing and returning a copy of this letter.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept this offer of at-will employment.
+
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'canada') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+{{EMPLOYEE_NAME}}
+
+Subject: Appointment Letter — {{DESIGNATION}}
+
+Dear {{EMPLOYEE_NAME}},
+
+We are pleased to appoint you as {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{CITY}}, effective {{JOINING_DATE}}.
+
+1. POSITION: You will be employed as {{DESIGNATION}} and will report to {{REPORTING_MANAGER}}.
+
+2. COMPENSATION: Your annual base salary will be ${cfg.currency}{{SALARY}}, payable in accordance with the Company's payroll schedule, subject to applicable tax withholdings, CPP, and EI contributions.
+
+3. PROBATION: You will be subject to a probationary period of {{PROBATION_PERIOD}}. During this time, your employment may be terminated in accordance with applicable provincial employment standards.
+
+4. BENEFITS: You are eligible to participate in the Company's group benefits plan (health, dental, pension) subject to plan terms and provincial regulations.
+
+5. CONDITIONS: This offer is conditional upon satisfactory reference and background verification, and your legal entitlement to work in Canada (SIN required).
+
+6. TERMINATION: After the probationary period, termination notice or pay in lieu thereof shall be provided as required by the applicable provincial Employment Standards Code and the common law.
+
+7. CONFIDENTIALITY: You agree to maintain the confidentiality of all proprietary information and trade secrets.
+
+We look forward to your contribution.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept the terms of employment.
+
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'uk') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+{{EMPLOYEE_NAME}}
+
+Subject: Appointment Letter — {{DESIGNATION}}
+
+Dear {{EMPLOYEE_NAME}},
+
+We are pleased to confirm your appointment as {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{CITY}}, with effect from {{JOINING_DATE}}.
+
+1. ROLE: You will report to {{REPORTING_MANAGER}} and your duties will be as outlined in your job description.
+
+2. REMUNERATION: Your annual gross salary will be ${cfg.currency}{{SALARY}}, payable monthly by bank transfer, subject to PAYE tax and National Insurance deductions.
+
+3. PROBATION: You will be subject to a probationary period of {{PROBATION_PERIOD}}. Your appointment will be reviewed before the end of this period.
+
+4. WORKING HOURS: Your normal working hours are as specified in your contract and comply with the Working Time Regulations 1998.
+
+5. PENSION: You will be automatically enrolled into the Company's workplace pension scheme in accordance with the Pensions Act 2008. You have the right to opt out.
+
+6. HOLIDAY: You are entitled to the statutory minimum annual leave (currently 28 days including bank holidays, pro rata) or such enhanced entitlement as stated in the staff handbook.
+
+7. NOTICE PERIOD: During probation, one week's notice from either party. Thereafter, statutory minimum notice (one week per completed year of service, minimum one week) or as contractually agreed.
+
+8. RIGHT TO WORK: This appointment is conditional upon you providing satisfactory evidence of your right to work in the UK and a satisfactory DBS check where applicable.
+
+9. CONFIDENTIALITY: You are required to maintain strict confidentiality regarding Company affairs.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept the terms and conditions.
+
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'eu') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+{{EMPLOYEE_NAME}}
+
+Subject: Appointment Letter — {{DESIGNATION}}
+
+Dear {{EMPLOYEE_NAME}},
+
+We are pleased to appoint you as {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{CITY}}, effective {{JOINING_DATE}}.
+
+1. ROLE AND REPORTING: You will report to {{REPORTING_MANAGER}}. A detailed job description is annexed hereto.
+
+2. REMUNERATION: Your annual gross remuneration is set at ${cfg.currency}{{SALARY}}, payable in 12 or 14 monthly instalments as per Company policy and local custom. Social security contributions and applicable taxes shall be deducted at source.
+
+3. PROBATION: A probationary period of {{PROBATION_PERIOD}} applies, in compliance with EU Directive 2019/1152 and applicable national law. During probation, shorter notice periods may apply as permitted by law.
+
+4. WORKING TIME: Your working time shall comply with Directive 2003/88/EC (maximum 48-hour average week, including overtime, unless you validly opt out where permitted).
+
+5. ANNUAL LEAVE: You are entitled to the statutory minimum of four weeks' paid annual leave under Directive 2003/88/EC, plus any additional contractual entitlement.
+
+6. BENEFITS: You may participate in the Company's supplementary benefits (pension, health insurance) subject to plan terms and local tax rules.
+
+7. CONFIDENTIALITY AND IP: You undertake to observe strict confidentiality and to comply with the Company's Intellectual Property and Data Protection policies, including GDPR where applicable.
+
+8. TERMINATION: After probation, termination shall be effected in accordance with applicable national labour law and the required statutory notice period.
+
+9. RIGHT TO WORK: This appointment is conditional upon valid work authorisation and any required residence permit for the Member State of employment.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept the terms of employment.
+
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{EMPLOYEE_NAME}}
+
+Subject: Appointment Letter — {{DESIGNATION}}
+
+Dear {{EMPLOYEE_NAME}},
+
+We are pleased to appoint you as {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{CITY}}, effective {{JOINING_DATE}}.
+
+1. POSITION: You will report to {{REPORTING_MANAGER}}.
+
+2. REMUNERATION: ${cfg.currency}{{SALARY}} per annum, payable per Company payroll policy.
+
+3. PROBATION: {{PROBATION_PERIOD}}.
+
+4. WORKING HOURS: As per Company policy and local labour regulations.
+
+5. CONFIDENTIALITY: You agree to maintain strict confidentiality of Company information.
+
+6. TERMINATION: Either party may terminate this employment by giving ${cfg.noticePeriod}' written notice, or as required by applicable law.
+
+We welcome you to the team.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept the above terms.
+
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          }
+        }
+      },
+
+      {
+        id: 'experience',
+        name: 'Experience Letter',
+        icon: '🏆',
+        getFields: (r) => {
+          const cfg = REGION_CONFIG[r];
+          const isEU = r === 'eu';
+          return [
+            { key: 'companyName', label: 'Company Name', type: 'text', placeholder: 'e.g. Acme Corp', hint: 'Employer legal name' },
+            { key: 'companyAddress', label: 'Company Address', type: 'textarea', placeholder: 'Registered address', hint: cfg.addrHint },
+            { key: 'employeeName', label: 'Employee Full Name', type: 'text', placeholder: 'e.g. Jane Doe', hint: 'Full legal name' },
+            { key: 'designation', label: 'Designation', type: 'text', placeholder: 'e.g. Product Manager', hint: 'Last held position' },
+            { key: 'fromDate', label: 'Joining Date', type: 'date', hint: cfg.dateHint },
+            { key: 'toDate', label: 'Last Working Date', type: 'date', hint: 'Final day of employment' },
+            { key: 'performanceNote', label: isEU ? 'Duties Summary' : 'Performance Note', type: 'select', options: isEU ? ['fulfilled duties', 'completed assignments'] : ['excellent', 'good', 'satisfactory'], hint: isEU ? 'Factual description only (EU compliance)' : 'Overall performance rating' },
+            { key: 'signatoryName', label: 'Authorized Signatory Name', type: 'text', placeholder: 'e.g. Robert Brown', hint: 'Name of authorized person' },
+            { key: 'signatoryDesignation', label: 'Signatory Designation', type: 'text', placeholder: 'e.g. HR Director', hint: 'Designation of signatory' },
+            { key: 'issueDate', label: 'Issue Date', type: 'date', hint: 'Letter issue date' }
+          ];
+        },
+        getTemplate: (r) => {
+          const cfg = REGION_CONFIG[r];
+          const isEU = r === 'eu';
+          const perfLine = isEU 
+            ? `During their tenure, {{EMPLOYEE_NAME}} fulfilled their duties as {{DESIGNATION}} and completed the assignments entrusted to them.`
+            : `During their tenure with our organization, {{EMPLOYEE_NAME}} has demonstrated {{PERFORMANCE_NOTE}} performance and professional conduct.`;
+          return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+TO WHOMSOEVER IT MAY CONCERN
+
+This is to certify that {{EMPLOYEE_NAME}} was employed with {{COMPANY_NAME}} as {{DESIGNATION}} from {{FROM_DATE}} to {{TO_DATE}}.
+
+${perfLine}
+
+We wish them the very best in their future endeavors.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}`;
+        }
+      },
+
+      {
+        id: 'affidavit',
+        name: 'Affidavit',
+        icon: '⚖️',
+        getFields: (r) => {
+          const cfg = REGION_CONFIG[r];
+          if (r === 'india') {
+            return [
+              { key: 'deponentName', label: 'Deponent Full Name', type: 'text', placeholder: 'e.g. Arun Patel', hint: 'Full legal name' },
+              { key: 'fatherName', label: "Father's Name", type: 'text', placeholder: 'e.g. Mahesh Patel', hint: "Father's full name" },
+              { key: 'age', label: 'Age (Years)', type: 'text', placeholder: 'e.g. 28', hint: 'Current age in years' },
+              { key: 'address', label: 'Permanent Address', type: 'textarea', placeholder: 'Full permanent address', hint: 'As per Aadhaar/Passport' },
+              { key: 'purpose', label: 'Purpose of Affidavit', type: 'textarea', placeholder: 'Describe the purpose clearly...', hint: 'Detailed purpose statement' },
+              { key: 'city', label: 'City', type: 'text', placeholder: 'e.g. Delhi', hint: 'City of execution' },
+              { key: 'date', label: 'Date', type: 'date', hint: 'Affidavit date' }
+            ];
+          } else if (r === 'usa') {
+            return [
+              { key: 'affiantName', label: 'Affiant Full Name', type: 'text', placeholder: 'e.g. John Doe', hint: 'Full legal name' },
+              { key: 'state', label: 'State', type: 'text', placeholder: 'e.g. California', hint: 'State of execution' },
+              { key: 'county', label: 'County', type: 'text', placeholder: 'e.g. Los Angeles County', hint: 'County of execution' },
+              { key: 'address', label: 'Residence Address', type: 'textarea', placeholder: 'Full address', hint: 'Current residential address' },
+              { key: 'purpose', label: 'Purpose of Affidavit', type: 'textarea', placeholder: 'State the facts clearly under oath...', hint: 'Factual statement sworn to be true' },
+              { key: 'date', label: 'Date', type: 'date', hint: 'Date of signing' }
+            ];
+          } else if (r === 'canada') {
+            return [
+              { key: 'affiantName', label: 'Affiant Full Name', type: 'text', placeholder: 'e.g. Jean Tremblay', hint: 'Full legal name' },
+              { key: 'province', label: 'Province', type: 'text', placeholder: 'e.g. Ontario', hint: 'Province of execution' },
+              { key: 'address', label: 'Residence Address', type: 'textarea', placeholder: 'Full address', hint: 'Current residential address' },
+              { key: 'purpose', label: 'Purpose of Affidavit', type: 'textarea', placeholder: 'State the facts clearly...', hint: 'Factual sworn statement' },
+              { key: 'date', label: 'Date', type: 'date', hint: 'Date of signing' }
+            ];
+          } else if (r === 'uk') {
+            return [
+              { key: 'declarantName', label: 'Declarant Full Name', type: 'text', placeholder: 'e.g. James Smith', hint: 'Full legal name' },
+              { key: 'address', label: 'Residence Address', type: 'textarea', placeholder: 'Full address', hint: 'Current address with postcode' },
+              { key: 'purpose', label: 'Purpose of Statutory Declaration', type: 'textarea', placeholder: 'Set out the facts declared to be true...', hint: 'Factual declaration' },
+              { key: 'date', label: 'Date', type: 'date', hint: 'Date of declaration' }
+            ];
+          } else {
+            return [
+              { key: 'declarantName', label: 'Declarant Full Name', type: 'text', placeholder: 'e.g. Maria Garcia', hint: 'Full legal name' },
+              { key: 'address', label: 'Residence Address', type: 'textarea', placeholder: 'Full address', hint: 'Current residential address' },
+              { key: 'purpose', label: 'Purpose of Sworn Declaration', type: 'textarea', placeholder: 'State the facts to be sworn...', hint: 'Detailed factual statement' },
+              { key: 'city', label: 'City', type: 'text', placeholder: 'e.g. Berlin', hint: 'City of execution' },
+              { key: 'date', label: 'Date', type: 'date', hint: 'Date of declaration' }
+            ];
+          }
+        },
+        getTemplate: (r) => {
+          if (r === 'india') {
+            return `AFFIDAVIT
+
+I, {{DEPONENT_NAME}}, son/daughter of {{FATHER_NAME}}, aged {{AGE}} years, residing at {{ADDRESS}}, do hereby solemnly affirm and state as follows:
+
+1. That I am the deponent and am competent to swear this affidavit.
+
+2. {{PURPOSE}}
+
+3. That the contents of this affidavit are true and correct to the best of my knowledge and belief.
+
+DEPONENT
+
+Verified at {{CITY}} on this {{DATE}} that the contents of the above affidavit are true and correct to the best of my knowledge and belief and nothing material has been concealed therefrom.
+
+DEPONENT: ___________________________
+{{DEPONENT_NAME}}
+
+
+(To be attested by Notary/Oath Commissioner)
+
+Solemnly affirmed before me on _______________
+
+Notary/Oath Commissioner
+Seal & Signature`;
+          } else if (r === 'usa') {
+            return `AFFIDAVIT
+
+STATE OF {{STATE}}
+COUNTY OF {{COUNTY}}
+
+I, {{AFFIANT_NAME}}, being first duly sworn, depose and state under oath as follows:
+
+1. I am the affiant named above and reside at {{ADDRESS}}.
+
+2. {{PURPOSE}}
+
+3. I declare under penalty of perjury under the laws of the State of {{STATE}} that the foregoing is true and correct.
+
+Executed on {{DATE}} at {{ADDRESS}}.
+
+
+___________________________
+{{AFFIANT_NAME}}
+Affiant
+
+SWORN TO and subscribed before me this _____ day of ____________, 20____, by {{AFFIANT_NAME}}, who is personally known to me or who produced ___________________ as identification.
+
+___________________________
+Notary Public / Commissioner
+My Commission Expires: _______________`;
+          } else if (r === 'canada') {
+            return `AFFIDAVIT
+
+PROVINCE OF {{PROVINCE}}
+
+I, {{AFFIANT_NAME}}, of {{ADDRESS}}, MAKE OATH AND SAY AS FOLLOWS:
+
+1. I am the affiant and have personal knowledge of the matters stated herein.
+
+2. {{PURPOSE}}
+
+3. I make this affidavit in support of the above purpose and for no other reason.
+
+4. I believe that the facts stated in this affidavit are true.
+
+SWORN BEFORE ME at the ____________________ in the Province of {{PROVINCE}}, on {{DATE}}.
+
+
+___________________________
+{{AFFIANT_NAME}}
+Affiant
+
+A Commissioner for Taking Affidavits / Notary Public in and for the Province of {{PROVINCE}}
+
+
+___________________________
+Commissioner / Notary Public`;
+          } else if (r === 'uk') {
+            return `STATUTORY DECLARATION
+
+I, {{DECLARANT_NAME}}, of {{ADDRESS}}, do solemnly and sincerely DECLARE as follows:
+
+1. {{PURPOSE}}
+
+2. I make this declaration conscientiously believing the same to be true and by virtue of the Statutory Declarations Act 1835.
+
+DECLARED at ____________________ on {{DATE}}
+
+
+___________________________
+{{DECLARANT_NAME}}
+Declarant
+
+Signed and declared by the said {{DECLARANT_NAME}} in my presence this ______ day of ____________ 20____.
+
+___________________________
+Solicitor / Commissioner for Oaths
+Name: ___________________________
+Address: ___________________________`;
+          } else {
+            return `SWORN DECLARATION
+
+I, {{DECLARANT_NAME}}, residing at {{ADDRESS}}, hereby declare under oath as follows:
+
+1. I am the declarant and competent to make this sworn statement.
+
+2. {{PURPOSE}}
+
+3. I solemnly declare that the contents of this statement are true and accurate to the best of my knowledge and belief.
+
+Executed at {{CITY}} on {{DATE}}.
+
+
+___________________________
+{{DECLARANT_NAME}}
+Declarant
+
+(Sworn before a competent authority: Notary, Commissioner, or Judicial Officer)
+
+Authority: ___________________________
+Signature & Seal: ___________________________
+Date: _______________`;
+          }
+        }
+      },
+
+      {
+        id: 'noc',
+        name: 'NOC Letter',
+        icon: '✅',
+        getFields: (r) => {
+          const cfg = REGION_CONFIG[r];
+          return [
+            { key: 'issuerName', label: 'Issuer Name (Company or Person)', type: 'text', placeholder: 'e.g. ABC Holdings Ltd', hint: 'Entity issuing NOC' },
+            { key: 'issuerAddress', label: 'Issuer Address', type: 'textarea', placeholder: 'Full address', hint: cfg.addrHint },
+            { key: 'recipientName', label: 'Recipient Name', type: 'text', placeholder: 'e.g. Rahul Gupta', hint: 'Recipient full name' },
+            { key: 'recipientAddress', label: 'Recipient Address', type: 'textarea', placeholder: 'Full address', hint: cfg.addrHint },
+            { key: 'purpose', label: 'Purpose of NOC', type: 'textarea', placeholder: 'Clearly state the purpose...', hint: 'Specific purpose details' },
+            { key: 'signatoryName', label: 'Authorized Signatory', type: 'text', placeholder: 'e.g. Vikram Mehta', hint: 'Name of signatory' },
+            { key: 'signatoryDesignation', label: 'Designation', type: 'text', placeholder: 'e.g. Director', hint: 'Signatory designation' },
+            { key: 'date', label: 'Date', type: 'date', hint: 'NOC issue date' },
+            { key: 'city', label: 'City', type: 'text', placeholder: 'e.g. Pune', hint: 'Place of issue' }
+          ];
+        },
+        getTemplate: (r) => {
+          return `{{ISSUER_NAME}}
+{{ISSUER_ADDRESS}}
+
+Date: {{DATE}}
+
+To,
+{{RECIPIENT_NAME}}
+{{RECIPIENT_ADDRESS}}
+
+Subject: No Objection Certificate
+
+Dear {{RECIPIENT_NAME}},
+
+This is to certify that we, {{ISSUER_NAME}}, have no objection to the following:
+
+{{PURPOSE}}
+
+We hereby issue this No Objection Certificate for the above-mentioned purpose and confirm that we have no claims, disputes, or objections in this regard.
+
+This certificate is issued at the request of {{RECIPIENT_NAME}} and is valid for the specific purpose mentioned above only.
+
+Yours sincerely,
+For {{ISSUER_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}
+Place: {{CITY}}`;
+        }
+      },
+
+      {
+        id: 'offer',
+        name: 'Offer Letter',
+        icon: '💼',
+        getFields: (r) => {
+          const cfg = REGION_CONFIG[r];
+          const isIndia = r === 'india';
+          return [
+            { key: 'companyName', label: 'Company Name', type: 'text', placeholder: 'e.g. Google Inc.', hint: 'Registered legal entity' },
+            { key: 'companyAddress', label: 'Company Address', type: 'textarea', placeholder: 'Registered office address', hint: cfg.addrHint },
+            { key: 'candidateName', label: 'Candidate Full Name', type: 'text', placeholder: 'e.g. Neha Kapoor', hint: 'As per government ID' },
+            { key: 'candidateAddress', label: 'Candidate Address', type: 'textarea', placeholder: 'Current address', hint: cfg.addrHint },
+            { key: 'designation', label: 'Offered Designation', type: 'text', placeholder: 'e.g. Product Manager', hint: 'Job title' },
+            { key: 'department', label: 'Department', type: 'text', placeholder: 'e.g. Product', hint: 'Department name' },
+            { key: 'ctc', label: isIndia ? `Annual CTC (${cfg.currency})` : `Annual Base Salary (${cfg.currency})`, type: 'text', placeholder: isIndia ? 'e.g. 2400000' : 'e.g. 120000', hint: isIndia ? 'Per annum total compensation' : 'Per annum base salary' },
+            { key: 'joiningDate', label: 'Expected Joining Date', type: 'date', hint: cfg.dateHint },
+            { key: 'offerValidity', label: 'Offer Valid Till', type: 'date', hint: 'Last date to accept' },
+            { key: 'location', label: 'Work Location', type: 'text', placeholder: 'e.g. Hyderabad / London / Remote', hint: 'Primary work location' },
+            { key: 'issueDate', label: 'Issue Date', type: 'date', hint: 'Letter date' }
+          ];
+        },
+        getTemplate: (r) => {
+          const cfg = REGION_CONFIG[r];
+          if (r === 'india') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{CANDIDATE_NAME}}
+{{CANDIDATE_ADDRESS}}
+
+Subject: Offer of Employment — {{DESIGNATION}}
+
+Dear {{CANDIDATE_NAME}},
+
+We are pleased to offer you the position of {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{LOCATION}}.
+
+The details of your offer are as follows:
+
+1. DESIGNATION: {{DESIGNATION}}
+2. DEPARTMENT: {{DEPARTMENT}}
+3. LOCATION: {{LOCATION}}
+4. ANNUAL CTC: ${cfg.currency}{{CTC}}/- per annum
+5. DATE OF JOINING: {{JOINING_DATE}}
+
+This offer is subject to:
+- Successful completion of background verification
+- Submission of all required documents at the time of joining
+- Medical fitness as per Company norms
+
+Please note that this offer is valid till {{OFFER_VALIDITY}}. Kindly confirm your acceptance by signing and returning a copy of this letter.
+
+We look forward to welcoming you to our team.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept this offer of employment.
+
+{{CANDIDATE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'usa') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+{{CANDIDATE_NAME}}
+{{CANDIDATE_ADDRESS}}
+
+Subject: Offer of Employment — {{DESIGNATION}}
+
+Dear {{CANDIDATE_NAME}},
+
+We are pleased to offer you the position of {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, located in {{LOCATION}}.
+
+1. COMPENSATION: Your annual base salary will be ${cfg.currency}{{CTC}}, payable in accordance with the Company's standard payroll schedule. You may also be eligible for a discretionary bonus and equity awards subject to plan terms.
+
+2. START DATE: Your anticipated start date is {{JOINING_DATE}}.
+
+3. EMPLOYMENT AT-WILL: Your employment will be on an at-will basis. This means that either you or the Company may terminate the employment relationship at any time, for any reason, with or without cause and with or without notice. This letter is not a contract guaranteeing employment for any specific duration.
+
+4. CONDITIONS: This offer is contingent upon:
+   - Successful completion of background, reference, and education verification
+   - Satisfactory proof of your legal right to work in the United States (Form I-9 and E-Verify where applicable)
+   - Execution of the Company's Confidentiality, IP Assignment, and Arbitration Agreements
+   - Compliance with any applicable drug screening requirements
+
+5. BENEFITS: You will be eligible to participate in Company benefit plans (health, dental, vision, 401(k), life, and disability) in accordance with plan documents.
+
+6. OFFER EXPIRY: This offer expires on {{OFFER_VALIDITY}} unless otherwise extended in writing.
+
+Please confirm acceptance by signing below and returning this letter.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept this at-will offer of employment.
+
+{{CANDIDATE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'canada') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+{{CANDIDATE_NAME}}
+{{CANDIDATE_ADDRESS}}
+
+Subject: Offer of Employment — {{DESIGNATION}}
+
+Dear {{CANDIDATE_NAME}},
+
+We are pleased to offer you the position of {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{LOCATION}}.
+
+1. COMPENSATION: Your annual base salary will be ${cfg.currency}{{CTC}}, subject to applicable tax withholdings, CPP, and EI contributions, paid in accordance with the Company's payroll schedule.
+
+2. START DATE: {{JOINING_DATE}}.
+
+3. PROBATION: You will be subject to a probationary period as per applicable provincial employment standards and Company policy.
+
+4. CONDITIONS: This offer is conditional upon:
+   - Satisfactory reference and background verification
+   - Proof of legal entitlement to work in Canada (valid SIN)
+   - Execution of the Company's Confidentiality and IP agreements
+
+5. BENEFITS: You will be eligible to enrol in the Company's group benefits (health, dental, pension) subject to plan terms and provincial regulations.
+
+6. TERMINATION: After the probationary period, termination notice or pay in lieu shall be provided as required by the applicable provincial Employment Standards Act and common law.
+
+7. OFFER EXPIRY: This offer remains valid until {{OFFER_VALIDITY}}.
+
+Please confirm your acceptance by signing below.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept this offer of employment.
+
+{{CANDIDATE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'uk') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+{{CANDIDATE_NAME}}
+{{CANDIDATE_ADDRESS}}
+
+Subject: Offer of Employment — {{DESIGNATION}}
+
+Dear {{CANDIDATE_NAME}},
+
+We are pleased to offer you the position of {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{LOCATION}}.
+
+1. REMUNERATION: Your annual gross salary will be ${cfg.currency}{{CTC}}, payable monthly by bank transfer, subject to PAYE and National Insurance.
+
+2. START DATE: {{JOINING_DATE}}.
+
+3. PROBATION: You will be subject to a probationary period. Your appointment will be reviewed before the end of this period.
+
+4. CONDITIONS: This offer is conditional upon:
+   - Satisfactory references and background checks
+   - Evidence of your right to work in the UK
+   - A satisfactory DBS check where required by the role
+   - Execution of the Company's confidentiality agreement
+
+5. BENEFITS: You will be automatically enrolled into the workplace pension scheme (subject to opt-out rights) and entitled to annual leave as per the Working Time Regulations and Company policy.
+
+6. NOTICE: During probation, one week's notice from either party. Thereafter, statutory minimum notice or as contractually agreed.
+
+7. OFFER EXPIRY: Please confirm acceptance by {{OFFER_VALIDITY}}.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept the terms of this offer.
+
+{{CANDIDATE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'eu') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+{{CANDIDATE_NAME}}
+{{CANDIDATE_ADDRESS}}
+
+Subject: Offer of Employment — {{DESIGNATION}}
+
+Dear {{CANDIDATE_NAME}},
+
+We are pleased to offer you the position of {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{LOCATION}}.
+
+1. REMUNERATION: Your annual gross remuneration is set at ${cfg.currency}{{CTC}}, payable in monthly instalments as per Company policy and local custom, subject to statutory deductions.
+
+2. START DATE: {{JOINING_DATE}}.
+
+3. PROBATION: A probationary period applies, not exceeding six months in accordance with EU Directive 2019/1152 and applicable national law.
+
+4. CONDITIONS: This offer is conditional upon:
+   - Satisfactory references and background verification
+   - Valid work and residence authorisation for the Member State of employment
+   - Execution of the Company's confidentiality and data protection (GDPR) undertakings
+
+5. WORKING CONDITIONS: Your working time, rest periods, and annual leave shall comply with Directive 2003/88/EC and applicable national implementing legislation. Any collective agreement applicable to the Company shall also govern your terms.
+
+6. BENEFITS: You may participate in supplementary pension and health schemes subject to plan terms and local tax rules.
+
+7. OFFER EXPIRY: Please confirm acceptance by {{OFFER_VALIDITY}}.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept the terms of employment.
+
+{{CANDIDATE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{CANDIDATE_NAME}}
+{{CANDIDATE_ADDRESS}}
+
+Subject: Offer of Employment — {{DESIGNATION}}
+
+Dear {{CANDIDATE_NAME}},
+
+We are pleased to offer you the position of {{DESIGNATION}} in the {{DEPARTMENT}} Department at {{COMPANY_NAME}}, {{LOCATION}}.
+
+1. DESIGNATION: {{DESIGNATION}}
+2. DEPARTMENT: {{DEPARTMENT}}
+3. LOCATION: {{LOCATION}}
+4. ANNUAL REMUNERATION: ${cfg.currency}{{CTC}} per annum
+5. DATE OF JOINING: {{JOINING_DATE}}
+
+This offer is subject to:
+- Successful completion of background verification
+- Submission of all required documents at the time of joining
+- Medical fitness as per Company norms
+
+Please note that this offer is valid till {{OFFER_VALIDITY}}. Kindly confirm your acceptance by signing and returning a copy of this letter.
+
+We look forward to welcoming you to our team.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+Authorized Signatory
+
+I accept this offer of employment.
+
+{{CANDIDATE_NAME}}
+Signature: _______________     Date: _______________`;
+          }
+        }
+      },
+
+      {
+        id: 'warning',
+        name: 'Warning Letter',
+        icon: '⚠️',
+        getFields: (r) => {
+          const cfg = REGION_CONFIG[r];
+          const isUK = r === 'uk';
+          const isEU = r === 'eu';
+          return [
+            { key: 'companyName', label: 'Company Name', type: 'text', placeholder: 'e.g. Acme Corp', hint: 'Employer legal name' },
+            { key: 'employeeName', label: 'Employee Full Name', type: 'text', placeholder: 'e.g. Karan Joshi', hint: 'Employee full name' },
+            { key: 'employeeId', label: 'Employee ID', type: 'text', placeholder: 'e.g. EMP102345', hint: 'Employee code / ID number' },
+            { key: 'designation', label: 'Employee Designation', type: 'text', placeholder: 'e.g. Analyst', hint: 'Current designation' },
+            { key: 'incidentDate', label: 'Incident Date', type: 'date', hint: cfg.dateHint },
+            { key: 'issueDate', label: 'Letter Issue Date', type: 'date', hint: 'Warning letter date' },
+            { key: 'warningType', label: isUK ? 'Disciplinary Stage' : (isEU ? 'Formal Reprimand Level' : 'Warning Type'), type: 'select', options: isUK ? ['First Written Warning', 'Final Written Warning'] : (isEU ? ['First Formal Reprimand', 'Second Formal Reprimand'] : ['First Warning', 'Second Warning', 'Final Warning']), hint: 'Severity level' },
+            { key: 'incidentDescription', label: 'Incident Description', type: 'textarea', placeholder: 'Describe the incident in detail...', hint: 'Detailed factual description' },
+            { key: 'signatoryName', label: 'HR / Manager Name', type: 'text', placeholder: 'e.g. Anil Kumar', hint: 'Issuing authority name' },
+            { key: 'signatoryDesignation', label: 'Designation', type: 'text', placeholder: 'e.g. HR Manager', hint: 'Issuing authority designation' }
+          ];
+        },
+        getTemplate: (r) => {
+          const cfg = REGION_CONFIG[r];
+          if (r === 'india') {
+            return `{{COMPANY_NAME}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{EMPLOYEE_NAME}}
+Employee ID: {{EMPLOYEE_ID}}
+Designation: {{DESIGNATION}}
+
+Subject: {{WARNING_TYPE}} — Notice of Misconduct/Poor Performance
+
+Dear {{EMPLOYEE_NAME}},
+
+This letter serves as a formal {{WARNING_TYPE}} regarding the incident that occurred on {{INCIDENT_DATE}}.
+
+INCIDENT DETAILS:
+{{INCIDENT_DESCRIPTION}}
+
+This behavior/conduct is in violation of the Company's policies and code of conduct. Such behavior is unacceptable and reflects poorly on your professionalism.
+
+We expect immediate improvement in your behavior/performance. Please note that further instances of such conduct may result in more severe disciplinary action, up to and including termination of employment.
+
+You are required to acknowledge receipt of this warning letter by signing and returning a copy to the HR department.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}
+
+Acknowledged by:
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'usa') {
+            return `{{COMPANY_NAME}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{EMPLOYEE_NAME}}
+Employee ID: {{EMPLOYEE_ID}}
+Title: {{DESIGNATION}}
+
+Subject: {{WARNING_TYPE}} — Progressive Discipline
+
+Dear {{EMPLOYEE_NAME}},
+
+This letter constitutes a formal {{WARNING_TYPE}} concerning the incident that occurred on {{INCIDENT_DATE}}.
+
+INCIDENT SUMMARY:
+{{INCIDENT_DESCRIPTION}}
+
+This conduct violates the Company's policies, the Employee Handbook, and the standards of professional behavior expected of all employees. The Company takes these matters seriously to ensure a safe, respectful, and productive workplace.
+
+You are hereby advised that immediate and sustained improvement is required. Please be advised that your employment is at-will, and further violations of Company policy may result in additional disciplinary action, up to and including immediate termination.
+
+You must acknowledge receipt of this letter by signing below. Your signature does not necessarily indicate agreement with the contents but confirms receipt.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}
+
+Acknowledged by:
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'canada') {
+            return `{{COMPANY_NAME}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{EMPLOYEE_NAME}}
+Employee ID: {{EMPLOYEE_ID}}
+Designation: {{DESIGNATION}}
+
+Subject: {{WARNING_TYPE}} — Disciplinary Action
+
+Dear {{EMPLOYEE_NAME}},
+
+This letter serves as a formal {{WARNING_TYPE}} in respect of the incident that occurred on {{INCIDENT_DATE}}.
+
+INCIDENT DETAILS:
+{{INCIDENT_DESCRIPTION}}
+
+This conduct is in violation of the Company's policies and the applicable provincial employment standards and occupational health and safety obligations. Such conduct is unacceptable and will not be tolerated.
+
+You are required to take immediate corrective action. Please be advised that further incidents may result in further disciplinary measures, up to and including termination of employment, in accordance with provincial law and Company policy.
+
+Please acknowledge receipt by signing below.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}
+
+Acknowledged by:
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'uk') {
+            return `{{COMPANY_NAME}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{EMPLOYEE_NAME}}
+Employee ID: {{EMPLOYEE_ID}}
+Designation: {{DESIGNATION}}
+
+Subject: {{WARNING_TYPE}}
+
+Dear {{EMPLOYEE_NAME}}},
+
+This letter is to inform you that you are being issued a {{WARNING_TYPE}} following the incident that occurred on {{INCIDENT_DATE}}.
+
+INCIDENT DETAILS:
+{{INCIDENT_DESCRIPTION}}
+
+This conduct breaches the Company's disciplinary policy and the standards expected under the ACAS Code of Practice on Disciplinary and Grievance Procedures. We require your conduct to improve immediately and to be maintained at an acceptable standard going forward.
+
+You have the right to appeal this warning under the Company's disciplinary procedure. An appeal must be lodged in writing within five working days of receipt of this letter. You also have the statutory right to be accompanied by a trade union representative or colleague at any disciplinary hearing.
+
+Failure to improve may result in further disciplinary action, up to and including dismissal with notice (or summary dismissal in cases of gross misconduct).
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}
+
+Acknowledged by:
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else if (r === 'eu') {
+            return `{{COMPANY_NAME}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{EMPLOYEE_NAME}}
+Employee ID: {{EMPLOYEE_ID}}
+Designation: {{DESIGNATION}}
+
+Subject: {{WARNING_TYPE}}
+
+Dear {{EMPLOYEE_NAME}},
+
+By this letter, the Company formally issues a {{WARNING_TYPE}} concerning the incident that occurred on {{INCIDENT_DATE}}.
+
+INCIDENT DETAILS:
+{{INCIDENT_DESCRIPTION}}
+
+This conduct is in breach of the Company's internal policies, the applicable collective agreement (if any), and the general duties of an employee under applicable Member State labour law.
+
+You are hereby required to remedy your conduct immediately. Please note that further breaches may result in additional disciplinary measures, up to and including termination of employment, subject to applicable procedural safeguards under national law and any works council / employee representation consultation requirements.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}
+
+Acknowledged by:
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          } else {
+            return `{{COMPANY_NAME}}
+
+Date: {{ISSUE_DATE}}
+
+To,
+{{EMPLOYEE_NAME}}
+Employee ID: {{EMPLOYEE_ID}}
+Designation: {{DESIGNATION}}
+
+Subject: {{WARNING_TYPE}} — Notice of Misconduct/Poor Performance
+
+Dear {{EMPLOYEE_NAME}},
+
+This letter serves as a formal {{WARNING_TYPE}} regarding the incident that occurred on {{INCIDENT_DATE}}.
+
+INCIDENT DETAILS:
+{{INCIDENT_DESCRIPTION}}
+
+This behavior/conduct is in violation of the Company's policies and code of conduct. Such behavior is unacceptable and reflects poorly on your professionalism.
+
+We expect immediate improvement in your behavior/performance. Please note that further instances of such conduct may result in more severe disciplinary action, up to and including termination of employment.
+
+You are required to acknowledge receipt of this warning letter by signing and returning a copy to the HR department.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}
+
+Acknowledged by:
+{{EMPLOYEE_NAME}}
+Signature: _______________     Date: _______________`;
+          }
+        }
+      },
+
+      {
+        id: 'relieving',
+        name: 'Relieving Letter',
+        icon: '🚪',
+        getFields: (r) => {
+          const cfg = REGION_CONFIG[r];
+          return [
+            { key: 'companyName', label: 'Company Name', type: 'text', placeholder: 'e.g. Wipro Ltd', hint: 'Employer legal name' },
+            { key: 'companyAddress', label: 'Company Address', type: 'textarea', placeholder: 'Registered address', hint: cfg.addrHint },
+            { key: 'employeeName', label: 'Employee Full Name', type: 'text', placeholder: 'e.g. Deepak Nair', hint: 'Full legal name' },
+            { key: 'designation', label: 'Designation', type: 'text', placeholder: 'e.g. Team Lead', hint: 'Last designation' },
+            { key: 'department', label: 'Department', type: 'text', placeholder: 'e.g. Operations', hint: 'Department name' },
+            { key: 'joiningDate', label: 'Original Joining Date', type: 'date', hint: cfg.dateHint },
+            { key: 'lastWorkingDate', label: 'Last Working Date', type: 'date', hint: 'Final working day' },
+            { key: 'signatoryName', label: 'Authorized Signatory', type: 'text', placeholder: 'e.g. Shalini Reddy', hint: 'Signatory name' },
+            { key: 'signatoryDesignation', label: 'Designation', type: 'text', placeholder: 'e.g. VP - HR', hint: 'Signatory designation' },
+            { key: 'issueDate', label: 'Letter Issue Date', type: 'date', hint: 'Relieving letter date' }
+          ];
+        },
+        getTemplate: (r) => {
+          const cfg = REGION_CONFIG[r];
+          if (r === 'india') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+TO WHOMSOEVER IT MAY CONCERN
+
+This is to certify that {{EMPLOYEE_NAME}} has been working with {{COMPANY_NAME}} as {{DESIGNATION}} in the {{DEPARTMENT}} Department since {{JOINING_DATE}}.
+
+{{EMPLOYEE_NAME}} has been relieved from their duties effective {{LAST_WORKING_DATE}}, as per their request and in accordance with the company's resignation and separation policy.
+
+We confirm that {{EMPLOYEE_NAME}} has completed all exit formalities and has no pending dues or obligations with the company.
+
+We wish them all the best for their future endeavors.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}`;
+          } else if (r === 'usa') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+TO WHOMSOEVER IT MAY CONCERN
+
+This letter confirms that {{EMPLOYEE_NAME}} was employed with {{COMPANY_NAME}} as {{DESIGNATION}} in the {{DEPARTMENT}} Department from {{JOINING_DATE}} to {{LAST_WORKING_DATE}}.
+
+{{EMPLOYEE_NAME}}'s employment ended on {{LAST_WORKING_DATE}}. As an at-will employee, the separation was processed in accordance with Company policy and applicable state and federal law.
+
+We confirm that {{EMPLOYEE_NAME}} has returned all Company property and that, to the best of our knowledge, there are no outstanding obligations requiring immediate attention.
+
+We wish {{EMPLOYEE_NAME}} success in future endeavors.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}`;
+          } else if (r === 'canada') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+TO WHOMSOEVER IT MAY CONCERN
+
+This is to certify that {{EMPLOYEE_NAME}} was employed with {{COMPANY_NAME}} as {{DESIGNATION}} in the {{DEPARTMENT}} Department from {{JOINING_DATE}} to {{LAST_WORKING_DATE}}.
+
+{{EMPLOYEE_NAME}}'s employment terminated on {{LAST_WORKING_DATE}} in accordance with the applicable provincial employment standards and Company policy. A Record of Employment (ROE) will be issued as required by Service Canada regulations.
+
+We confirm that {{EMPLOYEE_NAME}} has completed separation formalities and, to the best of our knowledge, has no outstanding obligations with the Company.
+
+We wish {{EMPLOYEE_NAME}} all the best in future endeavors.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}`;
+          } else if (r === 'uk') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+TO WHOMSOEVER IT MAY CONCERN
+
+This is to certify that {{EMPLOYEE_NAME}} was employed with {{COMPANY_NAME}} as {{DESIGNATION}} in the {{DEPARTMENT}} Department from {{JOINING_DATE}} to {{LAST_WORKING_DATE}}.
+
+{{EMPLOYEE_NAME}}'s employment ended on {{LAST_WORKING_DATE}}. All final pay, including any accrued but untaken holiday pay due under the Working Time Regulations 1998, has been processed (or will be processed through the next payroll cycle). A P45 will be issued in due course.
+
+We confirm that {{EMPLOYEE_NAME}} has completed exit formalities and has no outstanding obligations.
+
+We wish {{EMPLOYEE_NAME}} every success in the future.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}`;
+          } else if (r === 'eu') {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+TO WHOMSOEVER IT MAY CONCERN
+
+This certificate confirms that {{EMPLOYEE_NAME}} was employed with {{COMPANY_NAME}} as {{DESIGNATION}} in the {{DEPARTMENT}} Department from {{JOINING_DATE}} to {{LAST_WORKING_DATE}}.
+
+{{EMPLOYEE_NAME}}'s employment ended on {{LAST_WORKING_DATE}}. Final settlement, including any outstanding remuneration and statutory holiday pay, has been or will be effected in accordance with applicable national law.
+
+This certificate is issued in a factual and objective manner, without subjective evaluation, in compliance with the requirements of several Member States (e.g., Germany, France, Belgium) regarding work certificates.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}`;
+          } else {
+            return `{{COMPANY_NAME}}
+{{COMPANY_ADDRESS}}
+
+Date: {{ISSUE_DATE}}
+
+TO WHOMSOEVER IT MAY CONCERN
+
+This is to certify that {{EMPLOYEE_NAME}} has been working with {{COMPANY_NAME}} as {{DESIGNATION}} in the {{DEPARTMENT}} Department since {{JOINING_DATE}}.
+
+{{EMPLOYEE_NAME}} has been relieved from their duties effective {{LAST_WORKING_DATE}}, as per their request and in accordance with the company's resignation and separation policy.
+
+We confirm that {{EMPLOYEE_NAME}} has completed all exit formalities and has no pending dues or obligations with the company.
+
+We wish them all the best for their future endeavors.
+
+For {{COMPANY_NAME}},
+
+
+___________________________
+{{SIGNATORY_NAME}}
+{{SIGNATORY_DESIGNATION}}`;
+          }
+        }
+      }
+    ];
+
+    // ===== DOM REFERENCES =====
+    const docList = document.getElementById('docList');
+    const mobileSelect = document.getElementById('mobileSelect');
+    const regionSelect = document.getElementById('regionSelect');
+    const emptyState = document.getElementById('emptyState');
+    const formContent = document.getElementById('formContent');
+    const docTitle = document.getElementById('docTitle');
+    const formGrid = document.getElementById('formGrid');
+    const previewContent = document.getElementById('previewContent');
+
+    // ===== HELPER: CONVERT CAMELCASE TO SNAKE_CASE PLACEHOLDER =====
+    function getPlaceholderKey(camelKey) {
+      return camelKey.replace(/([A-Z])/g, '_$1').toUpperCase();
+    }
+
+    // ===== HELPER: FORMAT DATE PER REGION =====
+    function formatDate(dateStr, region) {
+      if (!dateStr) return '[Date]';
+      const months = ['January','February','March','April','May','June',
+                      'July','August','September','October','November','December'];
+      const d = new Date(dateStr);
+      const day = d.getUTCDate();
+      const month = months[d.getUTCMonth()];
+      const year = d.getUTCFullYear();
+      if (region === 'usa' || region === 'canada') {
+        return `${month} ${day}, ${year}`;
+      }
+      return `${day} ${month} ${year}`;
+    }
+
+    // ===== HELPER: ESCAPE HTML =====
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ===== RENDER SIDEBAR =====
+    function renderSidebar() {
+      docList.innerHTML = '';
+      mobileSelect.innerHTML = '<option value="">Select Document Type...</option>';
+
+      DOCUMENT_TYPES.forEach(doc => {
+        const li = document.createElement('li');
+        li.className = 'doc-item';
+        li.dataset.id = doc.id;
+        li.innerHTML = `<span class="doc-icon">${doc.icon}</span><span>${doc.name}</span>`;
+        li.addEventListener('click', () => selectDocument(doc.id));
+        docList.appendChild(li);
+
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = `${doc.icon} ${doc.name}`;
+        mobileSelect.appendChild(option);
+      });
+    }
+
+    // ===== CHANGE REGION =====
+    function changeRegion(region) {
+      currentRegion = region;
+      if (currentDoc) {
+        renderForm();
+        updatePreview();
+      }
+    }
+
+    // ===== DOCUMENT SWITCHER =====
+    function selectDocument(docId) {
+      document.querySelectorAll('.doc-item').forEach(item => item.classList.remove('active'));
+      
+      const activeItem = document.querySelector(`.doc-item[data-id="${docId}"]`);
+      if (activeItem) activeItem.classList.add('active');
+
+      mobileSelect.value = docId;
+
+      currentDoc = DOCUMENT_TYPES.find(d => d.id === docId);
+      if (!currentDoc) return;
+
+      emptyState.style.display = 'none';
+      formContent.style.display = 'block';
+
+      docTitle.textContent = `${currentDoc.icon} ${currentDoc.name}`;
+
+      renderForm();
+      updatePreview();
+    }
+
+    // ===== RENDER FORM FIELDS =====
+    function renderForm() {
+      formGrid.innerHTML = '';
+      const fields = currentDoc.getFields(currentRegion);
+
+      fields.forEach(field => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'form-field';
+        if (field.type === 'textarea') wrapper.classList.add('full-width');
+
+        let inputHtml = '';
+
+        if (field.type === 'select') {
+          inputHtml = `<select class="form-select" data-key="${field.key}" data-type="${field.type}">
+            <option value="">-- Select --</option>
+            ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+          </select>`;
+        } else if (field.type === 'textarea') {
+          inputHtml = `<textarea class="form-textarea" data-key="${field.key}" data-type="${field.type}" placeholder="${field.placeholder || ''}"></textarea>
+          <div class="char-count">0 characters</div>`;
+        } else {
+          inputHtml = `<input type="${field.type}" class="form-input" data-key="${field.key}" data-type="${field.type}" placeholder="${field.placeholder || ''}">`;
+        }
+
+        wrapper.innerHTML = `
+          <label class="form-label">${field.label}</label>
+          ${inputHtml}
+          ${field.hint ? `<div class="field-hint">${field.hint}</div>` : ''}
+        `;
+
+        formGrid.appendChild(wrapper);
+      });
+    }
+
+    // ===== REAL-TIME PREVIEW UPDATE =====
+    function updatePreview() {
+      if (!currentDoc) return;
+
+      const inputs = formGrid.querySelectorAll('input, select, textarea');
+      const values = {};
+
+      inputs.forEach(input => {
+        const key = input.dataset.key;
+        const type = input.dataset.type;
+        let val = input.value.trim();
+
+        if (type === 'date' && val) {
+          val = formatDate(val, currentRegion);
+        }
+
+        values[key] = val;
+      });
+
+      let template = currentDoc.getTemplate(currentRegion);
+      let html = escapeHtml(template);
+
+      const fields = currentDoc.getFields(currentRegion);
+      fields.forEach(field => {
+        const placeholder = getPlaceholderKey(field.key);
+        const regex = new RegExp(`\\{\\{${placeholder}\\}\\}`, 'g');
+        const val = values[field.key];
+
+        if (!val) {
+          html = html.replace(regex, `<span class="placeholder-hint">[${field.label}]</span>`);
+        } else {
+          html = html.replace(regex, escapeHtml(val));
+        }
+      });
+
+      previewContent.innerHTML = `<div class="document-paper">${html}</div>`;
+    }
+
+    // ===== PRINT / DOWNLOAD =====
+    function printDocument() {
+      const paper = previewContent.querySelector('.document-paper');
+      if (!paper) return;
+
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>${currentDoc ? currentDoc.name : 'Document'}</title>
+            <style>
+              body { 
+                font-family: 'Times New Roman', Times, serif; 
+                font-size: 12pt; 
+                line-height: 1.6; 
+                margin: 2cm; 
+                color: #000; 
+                background: #fff; 
+              }
+              .placeholder-hint { 
+                color: #B45309; 
+                font-weight: bold; 
+                background: #FEF3C7; 
+                padding: 2px 4px; 
+              }
+              pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
+            </style>
+          </head>
+          <body>
+            <pre>${paper.innerHTML}</pre>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
+
+    // ===== COPY TO CLIPBOARD =====
+    function copyToClipboard() {
+      const paper = previewContent.querySelector('.document-paper');
+      if (!paper) return;
+
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = paper.innerHTML;
+      const plainText = tempDiv.textContent || tempDiv.innerText || '';
+
+      navigator.clipboard.writeText(plainText).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        const original = btn.textContent;
+        btn.textContent = '✓';
+        setTimeout(() => btn.textContent = original, 1500);
+      }).catch(err => {
+        console.error('Copy failed:', err);
+      });
+    }
+
+    // ===== EVENT LISTENERS =====
+    formGrid.addEventListener('input', (e) => {
+      if (e.target.matches('input, select, textarea')) {
+        if (e.target.tagName === 'TEXTAREA') {
+          const counter = e.target.parentElement.querySelector('.char-count');
+          if (counter) {
+            counter.textContent = `${e.target.value.length} characters`;
+          }
+        }
+        updatePreview();
+      }
+    });
+
+    mobileSelect.addEventListener('change', (e) => {
+      if (e.target.value) {
+        selectDocument(e.target.value);
+      }
+    });
+
+    // ===== INITIALIZE =====
+    renderSidebar();
+  </script>
+</body>
+</html>
